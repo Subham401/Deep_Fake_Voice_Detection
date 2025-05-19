@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Guardian</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #f0f4f8, #e0e7ff);
+            margin: 0;
+            padding: 0;
+            color: #343a40;
+        }
+        video.background-video {
+            position: fixed; /* Fixed position to cover the entire viewport */
+            top: 0;
+            left: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            object-fit: cover; /* Cover the entire area */
+            z-index: -1; /* Place it behind other content */
+        }
+        header {
+            background: linear-gradient(to right, #88c1ff, #238dff);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border-bottom: 5px solid #0056b3;
+            position: relative;
+            opacity:0.9 ;
+        }
+        header img {
+            width: 200px; /* Adjust the size of the logo */
+            vertical-align: middle; /* Align logo with text */
+            margin-right: 10px; /* Space between logo and text */
+            border-style: groove;
+            border-radius: 20px;
+        }
+        h1 {
+            font-size: 20px; /* Increase font size */
+            font-weight: bold; /* Make the font bold */
+            letter-spacing: 1px; /* Add spacing between letters */
+            margin: 0; /* Remove default margin */
+            font-style: oblique;
+        }
+        .container {
+            position: relative; /* Make the container position relative */
+            width: 60%;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            overflow: hidden; /* Ensure content doesn't overflow */
+            transition: transform 0.3s;
+        }
+        .container::before {
+            content: '';
+            position: absolute; 
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("https://www.mobbeel.com/wp-content/uploads/2023/11/Deepfake-de-voz-795x289.png"); 
+            background-size: cover; 
+            background-position: center; 
+            opacity: 0.7;
+            z-index: 0;
+        }
+        .container > * {
+            position: relative; 
+            z-index: 1; 
+        }
+        h2 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-size: 1.8em; 
+        }
+        .drag-drop {
+            border: 2px dashed #ffffff;
+            background-color: rgba(250, 245, 245, 0.6);
+            padding: 40px; /* Increased padding */
+            text-align: center;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+            color: #ffffff;
+            height: 150px; /* Increased height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer; /* Make it look clickable */
+        }
+        .drag-drop:hover {
+            background-color: rgba(250, 245, 245, 0.4);
+        }
+        #browse-text {
+            color: blue;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            transition: opacity 0.3s;
+        }
+        .result span {
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #6c757d;
+            text-align: center; /* Center the text */
+            width: 100%; /* Ensure it takes full width */
+            position: relative; /* Position relative for better control */
+            bottom: 0; /* Align to the bottom */
+            
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        button:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo">
+    <h1>AI Guardian</h1>
+</header>
+<video class="background-video" autoplay muted loop>
+  <source src="{{ url_for('static', filename='background.mp4') }}" type="video/mp4">
+</video>
+
+<div class="container">
+    <h2>Upload an Audio File</h2>
+    <form id="audioForm">
+        <div id="drop-area" class="drag-drop">
+            <p id="drop-text">Drop a file here to upload, or <span id="browse-text">click here to browse</span></p>
+        </div> 
+        <input type="file" id="audioFile" accept="audio/*" required style="display: none;">
+        <br>
+        <button type="button" onclick="checkAudio()">Check Real or Fake</button>
+    </form>
+
+    <div class="result" id="result">
+        <!-- Result will be displayed here -->
+    </div>
+</div>
+
+<script>
+    let audioFile;
+
+    async function checkAudio() {
+        if (!audioFile) {
+            alert("Please upload an audio file.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", audioFile);
+
+        const resultElement = document.getElementById("result");
+        resultElement.innerHTML = "Processing...";
+
+        try {
+            const response = await fetch("/detect", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+            if (data.result) {
+                resultElement.innerHTML = data.result === "Real"
+                    ? '<span style="color: green;">The audio is REAL.</span>'
+                    : '<span style="color: red;">The audio is FAKE.</span>';
+            } else {
+                resultElement.innerHTML = `<span style="color: red;">Error: ${data.error}</span>`;
+            }
+        } catch (error) {
+            resultElement.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
+        }
+    }
+
+    const dropArea = document.getElementById("drop-area");
+    const fileInput = document.getElementById("audioFile");
+
+    dropArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropArea.style.backgroundColor = "rgba(0, 123, 255, 0.3)";
+    });
+
+    dropArea.addEventListener("dragleave", () => {
+        dropArea.style.backgroundColor = "rgba(0, 123, 255, 0.1)";
+    });
+
+    dropArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropArea.style.backgroundColor = "rgba(0, 123, 255, 0.1)";
+
+        if (e.dataTransfer.files.length > 0) {
+            audioFile = e.dataTransfer.files[0];
+            dropArea.innerHTML = `<p style="color: white;">${audioFile.name} uploaded successfully!</p>`;
+        }
+    });
+
+
+    // Clicking on the drop area should open file selection
+    dropArea.addEventListener("click", () => {
+        fileInput.click();
+    });
+
+    // Clicking on the "click here to browse" text should also open file selection
+    document.getElementById("browse-text").addEventListener("click", (e) => {
+        e.stopPropagation(); // Prevent triggering the drop area click event
+        fileInput.click();
+    });
+
+    // Updating UI when file is selected via browsing
+    fileInput.addEventListener("change", () => {
+        if (fileInput.files.length > 0) {
+            audioFile = fileInput.files[0];
+            dropArea.innerHTML = `<p style="color: green;">${audioFile.name} uploaded successfully!</p>`;
+        }
+    });
+
+</script>
+
+<div class="footer">
+    &copy; 2025 All Rights Reserved
+</div>
+
+</body>
+</html>
