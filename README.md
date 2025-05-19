@@ -20,21 +20,35 @@ To develop a system that detects whether an audio file is real or AI-generated u
 
 ---
 
-## 📁 Project Structure
 
-project/
-│
-├── app.py # Flask server & API endpoints
-├── detect_audio.py # ML model logic & prediction
-├── preprocess_audio.py # MFCC feature extraction utils
-├── audio_model.pth # Trained PyTorch model
-│
-├── templates/
-│ └── front.html # User-facing web interface (served by Flask)
-│
-├── static/
-│ ├── logo.jpg # Header logo image
-│ └── background.mp4 # Background video
-│
-├── uploads/ # Temporary folder for audio uploads
-└── README.md
+---
+
+## 💡 How It Works
+
+1. **Frontend (`front.html`)**:
+   - Lets user upload or drag-and-drop an audio file.
+   - Uses JavaScript `fetch()` to call the Flask API with the audio.
+
+2. **Backend (`app.py`)**:
+   - Receives the audio file at `/detect`.
+   - Saves and processes it via `predict_audio()` from `detect_audio.py`.
+   - Returns a JSON result: `{ "result": "Real" }` or `{ "result": "Fake" }`.
+
+3. **Model (`audio_model.pth`)**:
+   - A PyTorch classifier trained on MFCC features to distinguish real from fake voice samples.
+
+---
+
+## 🧪 Local Setup
+
+### Prerequisites
+
+- Python 3.8+
+- pip
+
+### Installation
+
+```bash
+git clone https://github.com/yourusername/ai-guardian.git
+cd ai-guardian
+pip install -r requirements.txt
