@@ -9,7 +9,7 @@ To develop a system that detects whether an audio file is real or AI-generated u
 
 ---
 
-## 🚀 Features
+# 🚀 Features
 
 - 🎤 Upload `.wav` or any audio file via drag & drop or file picker.
 - 🔍 Detects AI-generated (deepfake) vs. Real human voice.
