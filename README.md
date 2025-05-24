@@ -20,7 +20,7 @@ To develop a system that detects whether an audio file is real or AI-generated u
 
 ---
 
-```MIT Licensed
+## MIT Licensed
 
 ---
 
