@@ -52,3 +52,7 @@ To develop a system that detects whether an audio file is real or AI-generated u
 git clone https://github.com/yourusername/ai-guardian.git
 cd ai-guardian
 pip install -r Requirements.txt
+
+---
+
+```MIT Licensed
