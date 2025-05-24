@@ -21,7 +21,7 @@ To develop a system that detects whether an audio file is real or AI-generated u
 ---
 
 ## MIT Licensed
-
+Copyright (c) 2025 Subham Bose
 ---
 
 ## 💡 How It Works
